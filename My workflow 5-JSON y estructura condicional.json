@@ -1,0 +1,166 @@
+{
+  "name": "My workflow 5",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        -16
+      ],
+      "id": "5cd8aa79-49d1-40f7-9fb0-76af689c647a",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"nome\": \"María\",\n  \"usuario_activo\": true,\n  \"edad\": 28\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -112,
+        -16
+      ],
+      "id": "e0cfc06f-f477-4a53-a555-06b96fc2b378",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "422609a3-aef3-4821-b833-ee9c54d9a7c0",
+              "leftValue": "={{ $json.usurio_activo }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        96,
+        -16
+      ],
+      "id": "6a530e7b-f9cf-471a-aada-d21f94e9905c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "89258605-6d0b-4c12-9b4e-ed5c989300cb",
+              "name": "mensaje",
+              "value": "=Enviaré un mensaje a  {{ $json.nome }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        304,
+        -62.5
+      ],
+      "id": "6742e8d9-57a1-46e0-88d4-625126cf62a3",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2a21a871-dce2-4650-9232-932720c3fcdb",
+              "name": "mensaje",
+              "value": "No se enviará ningún mensaje porque el usuario no está activo.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        304,
+        80
+      ],
+      "id": "3ff5d263-910c-4520-aa55-5d8f1486a550",
+      "name": "Edit Fields2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "0fa8f7af-6f0b-4aa2-b72d-f394e7779ec5",
+  "meta": {
+    "instanceId": "f6da4866187631f72207fd151ae7395c552b7b71cb72a44778c0d8379f6a0646"
+  },
+  "nodeGroups": [],
+  "id": "nPN7W1egbbR4AbqK",
+  "tags": []
+}
