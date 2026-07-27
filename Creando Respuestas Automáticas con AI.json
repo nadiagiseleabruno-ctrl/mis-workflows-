@@ -1,0 +1,169 @@
+{
+  "name": "My workflow 4",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "58f3f303-5132-4da1-a669-b3d8766a665a",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "z7IOyAIJvIpePTnR",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0458eb13-57ad-43ea-ab3a-fa88d0785c6e",
+              "leftValue": "={{ $json.From }}",
+              "rightValue": "@gmail.com",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "bf8aac76-8605-4f56-803a-de8954c79acf",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un agente contestador de emails. Soy representante de la agencia Carrarruquia, y me llamo Pedro. Te enviaré un  correo que acabo de recibir y tu deberás crear la respuesta automática. sin añadir comentarios sólo el texto puro de la respuesta. No quiero que tenga asunto, sólo el cuerpo del email.\n\nEmail recibido:\n {{ $json.snippet }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        -48
+      ],
+      "id": "728c54fc-b410-4cf2-bb81-a3aa5d704bea",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "pkuoFvpEg3molGuc",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "message": "={{ $json.content.parts[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        327.125,
+        -48
+      ],
+      "id": "c0bcac01-4fe5-47f3-9049-2417c9c7b0c5",
+      "name": "Reply to a message",
+      "webhookId": "35ea073b-aac8-4894-91ce-485985af5c40",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "z7IOyAIJvIpePTnR",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b260409a-56f6-4fda-b053-c16453d0d7be",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f6da4866187631f72207fd151ae7395c552b7b71cb72a44778c0d8379f6a0646"
+  },
+  "nodeGroups": [],
+  "id": "zFeONDkYtRhbftTP",
+  "tags": []
+}
