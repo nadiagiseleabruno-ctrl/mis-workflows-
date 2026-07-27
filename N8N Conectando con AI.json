@@ -1,0 +1,265 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "13e45d85-c36d-4497-bb45-3f71538a2eac",
+      "name": "When chat message received",
+      "webhookId": "db16de45-098f-461b-a8f7-5b4aa3c5f5f6"
+    },
+    {
+      "parameters": {
+        "query": "={{ $json.chatInput }}",
+        "options": {
+          "max_results": 5,
+          "time_range": "week",
+          "include_raw_content": true
+        }
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavily",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "6dc13cb4-08b7-4c1b-97e5-fa6b7c7df7a6",
+      "name": "Search",
+      "credentials": {
+        "tavilyApi": {
+          "id": "swy2fuGYjJktG9eN",
+          "name": "Tavily account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "results",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        512,
+        0
+      ],
+      "id": "037921c6-bbdc-4df8-92a3-8699a2fd9902",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.6-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.6-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres un agente que hace resúmenes de noticias. Te enviaré una noticia y quiero que hagas un resumen con los puntos más relevantes. No quiero que añadas ningún comentario adicional, sólo devuelve el resumen.\nTexto:\n\n {{ $json.raw_content }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        304,
+        0
+      ],
+      "id": "11058e14-143c-47ce-975d-051e45706aec",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "pkuoFvpEg3molGuc",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "content.parts[0].text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        640,
+        0
+      ],
+      "id": "7aea45d4-95fa-4dc2-9373-c4315fab96b1",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        592,
+        208
+      ],
+      "id": "120471fb-7668-47c1-b563-191f313511fb",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "pkuoFvpEg3molGuc",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Eres agente redactor de posts de LinkedIn. Te enviaré un texto enorme, que es una combinación de resúmenes de noticia de la última semana  sobre algún tema.\nCon este texto, debes escribir un post para mi LinkedIn personal, con los puntos más relevantes. Quiero que añadas hashtags a final. No lo debes crear en estilo Markdown, sino,texto puro.\nNo quiero que añadas ningún comentario adicional, sólo devuelve el post final para ser publicado.\nTexto:\n\n {{ $json.text }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        848,
+        0
+      ],
+      "id": "5bbfb26e-b713-4aeb-85c9-2c715ccddbc0",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "pkuoFvpEg3molGuc",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "person": "aDkCtHubqg",
+        "text": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "id": "c30a9138-e817-444b-9d9b-77b8ebc6f237",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "vwyqEsKNhf0D3LhD",
+          "name": "LinkedIn account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "50ad8c42-c2d4-45e5-8a90-5c05102acd29",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f6da4866187631f72207fd151ae7395c552b7b71cb72a44778c0d8379f6a0646"
+  },
+  "nodeGroups": [],
+  "id": "hGJ8bXGHuguAZQcg",
+  "tags": []
+}
